@@ -27,14 +27,14 @@ def extract_movies_by_person_modified(pg_cursor: Cursor) -> list[FilmWork]:
             ) as persons,
             array_agg(DISTINCT g.name) as genres
         FROM content.person p_filter
-        JOIN content.person_film_work pfw_filter ON pfw_filter.genre_id = p_filter.id
+        JOIN content.person_film_work pfw_filter ON pfw_filter.person_id = p_filter.id
         JOIN content.film_work fw ON fw.id = pfw_filter.film_work_id
         
         LEFT JOIN content.person_film_work pfw_selection ON pfw_selection.film_work_id = fw.id
-        LEFT JOIN content.person p_selection ON p_selection.id = pfw_selection.genre_id
+        LEFT JOIN content.person p_selection ON p_selection.id = pfw_selection.person_id
         
         LEFT JOIN content.genre_film_work gfw ON gfw.film_work_id = fw.id
-        LEFT JOIN content.genre g ON g.id = gfw.person_id
+        LEFT JOIN content.genre g ON g.id = gfw.genre_id
 
 
         WHERE p_filter.modified > %s

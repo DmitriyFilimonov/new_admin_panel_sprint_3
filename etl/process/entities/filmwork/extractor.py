@@ -4,7 +4,7 @@ from psycopg import Cursor
 from process.entities.dataclasses import FilmWork
 
 
-def extrract_movies_by_modified(pg_cursor: Cursor) -> list[FilmWork]:
+def extract_movies_by_modified(pg_cursor: Cursor) -> list[FilmWork]:
     pg_cursor.execute(
         """
         SELECT
