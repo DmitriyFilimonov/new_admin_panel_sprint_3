@@ -1,10 +1,10 @@
 from datetime import datetime
-from psycopg import Cursor
+from psycopg import ServerCursor
 
 from process.entities.dataclasses import FilmWork
 
 
-def extract_movies_by_genre_modified(pg_cursor: Cursor):
+def extract_movies_by_genre_modified(pg_cursor: ServerCursor):
     pg_cursor.execute(
         """
         SELECT
