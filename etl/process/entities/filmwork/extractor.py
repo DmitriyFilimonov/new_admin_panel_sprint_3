@@ -1,18 +1,25 @@
 from datetime import datetime
 from typing import Generator
-from psycopg import ServerCursor
 
-from utils import coroutine
+from utils import backoff, coroutine
 from process.entities.dataclasses import FilmWork
 
+import psycopg
+from psycopg import ServerCursor
 
-@coroutine
-def extract_movies_by_modified(
-    pg_cursor: ServerCursor[FilmWork], next: Generator[None, list[FilmWork], None]
-) -> Generator[None, datetime, None]:
-    while last_updated := (yield):
-        pg_cursor.execute(
-            """
+from dsl import dsl
+from psycopg.rows import class_row
+
+
+@backoff(border_sleep_time=40)
+def get_pg_connection():
+    return psycopg.connect(**dsl, row_factory=class_row(FilmWork))
+
+
+@backoff(border_sleep_time=40)
+def execute_wrapper(cursor: ServerCursor, last_updated: datetime):
+    cursor.execute(
+        """
             SELECT
             fw.id,
             fw.title,
@@ -42,8 +49,20 @@ def extract_movies_by_modified(
             ORDER BY fw.modified
             LIMIT 100;
             """,
-            (last_updated,),
-        )
+        (last_updated,),
+    )
 
-        while results := pg_cursor.fetchmany(size=100):
-            next.send(results)
+
+@coroutine
+def extract_movies_by_modified(
+    next: Generator[None, list[FilmWork], None],
+) -> Generator[None, datetime, None]:
+    with (
+        get_pg_connection() as connection,
+        ServerCursor(connection=connection, name="extractor") as cursor,
+    ):
+        while last_updated := (yield):
+            execute_wrapper(cursor=cursor, last_updated=last_updated)
+
+            while results := cursor.fetchmany(size=100):
+                next.send(results)
