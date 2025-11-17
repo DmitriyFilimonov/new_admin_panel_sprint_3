@@ -11,5 +11,4 @@ from utils import coroutine
 def load_movies_by_modified(state: State) -> Generator[None, list[FilmWork], None]:
     while filworks := (yield):
         last_modified = filworks[-1].modified
-        print(filworks[-1].title, last_modified, flush=True)
         state.set_state(state_key=STATE_KEY, value=last_modified)
