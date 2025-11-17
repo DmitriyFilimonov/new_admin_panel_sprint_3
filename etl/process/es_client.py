@@ -1,10 +1,9 @@
 from dataclasses import asdict
-from time import sleep
 import requests
 import json
 import os
 from dotenv import load_dotenv
-from process.entities.models import FilmWorkESDoc, FilmWorkESDocRaw
+from process.entities.models import FilmWorkESDoc
 from utils import backoff
 
 schema = {

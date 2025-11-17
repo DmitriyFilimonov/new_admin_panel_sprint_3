@@ -4,16 +4,17 @@ from typing import Generator
 from process.es_client import create_scheme, send_bulk
 from state.state import State
 from process.entities.models import FilmWorkESDoc, FilmWorkESDocRaw
-from process.entities.filmwork.constants import STATE_KEY
+
 from utils import coroutine
 
 
 @coroutine
-def load_movies_by_modified(
+def load_movies(
+    state_key: str,
     state: State,
 ) -> Generator[None, list[FilmWorkESDocRaw], None]:
     while filworks := (yield):
-        if state.get_state(state_key=STATE_KEY) == datetime.min:
+        if state.get_state(state_key) == datetime.min:
             create_scheme()
 
         last_modified = filworks[-1].modified
@@ -36,4 +37,4 @@ def load_movies_by_modified(
             ]
         )
         print(last_modified, flush=True)
-        state.set_state(state_key=STATE_KEY, value=last_modified)
+        state.set_state(state_key=state_key, value=last_modified)
