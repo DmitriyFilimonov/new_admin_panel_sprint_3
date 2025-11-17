@@ -14,23 +14,23 @@ from process.entities.filmwork.loader import load_movies
 from process.entities.filmwork.constants import MOVIES_STATE_KEY
 
 
-def movies_etl(cursor: ServerCursor[FilmWork], state: State):
+def movies_etl(state: State):
     loader_by_modified = load_movies(state_key=MOVIES_STATE_KEY, state=state)
     transformer_by_modified = transform_movies(next=loader_by_modified)
     extractor_by_modified = extract_movies_by_modified(
-        cursor=cursor, next=transformer_by_modified
+         next=transformer_by_modified
     )
 
     loader_by_genre_modified = load_movies(state_key=GENRES_STATE_KEY, state=state)
     transformer_by_genre_modified = transform_movies(next=loader_by_genre_modified)
     extractor_by_genre_modified = extract_movies_by_genre_modified(
-        cursor=cursor, next=transformer_by_genre_modified
+         next=transformer_by_genre_modified
     )
 
     loader_by_persons_modified = load_movies(state_key=PERSONS_STATE_KEY, state=state)
     transformer_by_person_modified = transform_movies(next=loader_by_persons_modified)
     extractor_by_persons_modified = extract_movies_by_person_modified(
-        cursor=cursor, next=transformer_by_person_modified
+         next=transformer_by_person_modified
     )
 
     while True:

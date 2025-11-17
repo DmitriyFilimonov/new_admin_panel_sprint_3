@@ -1,3 +1,5 @@
+from logging import error, warning
+
 from functools import wraps
 from time import sleep
 from typing import Generator
@@ -20,7 +22,7 @@ RETRYABLE_ERRORS = (
     psycopg.OperationalError,
     ConnectionError,
     requests.exceptions.ConnectionError,
-    psycopg.OperationalError
+    psycopg.OperationalError,
 )
 
 
@@ -41,11 +43,10 @@ def backoff(start_sleep_time=1, factor=2, border_sleep_time=10):
             while True:
                 try:
                     return func(*args, **kwargs)
-                except Exception as error:
-                    if not isinstance(error, RETRYABLE_ERRORS):
-                        print(
+                except Exception as e:
+                    if not isinstance(e, RETRYABLE_ERRORS):
+                        error(
                             f'"{inner.__name__}": {error}.\nЗавершение процесса.',
-                            flush=True,
                         )
                         raise
 
@@ -53,18 +54,16 @@ def backoff(start_sleep_time=1, factor=2, border_sleep_time=10):
                     attempt += 1
 
                     if delay >= border_sleep_time:
-                        print(
+                        error(
                             f'Не удается выполнить "{inner.__name__}". Превышено максимальное время ожидания: {border_sleep_time} сек.',
                             f"\nВыполнено попыток: {attempt}.",
-                            flush=True,
                         )
 
                         raise
 
-                    print(
+                    warning(
                         f'Ошибка выполнения "{inner.__name__}": {error}.'
                         f"\nПовторная попытка через {delay:.0f} сек.",
-                        flush=True,
                     )
 
                     sleep(delay)

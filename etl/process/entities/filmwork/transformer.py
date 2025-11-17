@@ -14,12 +14,11 @@ from utils import coroutine
 def transform_movies(
     next: Generator[None, list[FilmWorkESDocRaw], None],
 ) -> Generator[None, list[FilmWork], None]:
-    transformed_filworks: list[FilmWorkESDocRaw] = []
 
     while filworks := (yield):
-        for filwork in filworks:
-            print(f"persons: {filwork.persons}", flush=True)
+        transformed_filworks: list[FilmWorkESDocRaw] = []
 
+        for filwork in filworks:
             transformed_persons = [
                 FilworkPerson(
                     person_id=p["person_id"],

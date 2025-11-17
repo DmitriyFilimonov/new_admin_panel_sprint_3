@@ -1,3 +1,4 @@
+from logging import info
 from datetime import datetime
 from typing import Generator
 
@@ -18,6 +19,7 @@ def load_movies(
             create_scheme()
 
         last_modified = filworks[-1].modified
+
         send_bulk(
             bulk=[
                 FilmWorkESDoc(
@@ -36,5 +38,9 @@ def load_movies(
                 for f in filworks
             ]
         )
-        print(last_modified, flush=True)
+
+        info(
+            f"info: {state_key} актуализированы до {str(last_modified)}. Обновлений: {len(filworks)}"
+        )
+
         state.set_state(state_key=state_key, value=last_modified)
