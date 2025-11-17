@@ -19,6 +19,7 @@ def load_movies(
             create_scheme()
 
         last_modified = filworks[-1].modified
+
         send_bulk(
             bulk=[
                 FilmWorkESDoc(
@@ -38,6 +39,8 @@ def load_movies(
             ]
         )
 
-        info(f"{state_key} актуализированы до {str(last_modified)}")
+        info(
+            f"info: {state_key} актуализированы до {str(last_modified)}. Обновлений: {len(filworks)}"
+        )
 
         state.set_state(state_key=state_key, value=last_modified)
