@@ -1,7 +1,7 @@
 from datetime import datetime
 from psycopg import ServerCursor
 
-from process.entities.dataclasses import FilmWork
+from process.entities.models import FilmWork
 
 
 def extract_movies_by_genre_modified(pg_cursor: ServerCursor):

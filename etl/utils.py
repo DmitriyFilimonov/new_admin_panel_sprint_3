@@ -19,7 +19,8 @@ def coroutine(func):
 RETRYABLE_ERRORS = (
     psycopg.OperationalError,
     ConnectionError,
-    requests.exceptions.ConnectionError
+    requests.exceptions.ConnectionError,
+    psycopg.OperationalError
 )
 
 
