@@ -4,6 +4,7 @@ from datetime import datetime
 from uuid import UUID, uuid4
 
 
+@dataclass
 class FilworkPerson:
     person_id: str
     person_name: str
@@ -35,3 +36,29 @@ class FilmWork:
             self.modified = datetime.fromisoformat(self.modified).replace(
                 tzinfo=ZoneInfo("Etc/UTC")
             )
+
+
+@dataclass
+class FilmWorkESDocPerson:
+    id: str
+    name: str
+
+
+@dataclass
+class FilmWorkESDoc:
+    id: str
+    imdb_rating: float
+    genres: list[str]
+    title: str
+    description: str
+    directors_names: list[str]
+    actors_names: list[str]
+    writers_names: list[str]
+    directors: list[FilmWorkESDocPerson]
+    actors: list[FilmWorkESDocPerson]
+    writers: list[FilmWorkESDocPerson]
+
+
+@dataclass
+class FilmWorkESDocRaw(FilmWorkESDoc):
+    modified: datetime
