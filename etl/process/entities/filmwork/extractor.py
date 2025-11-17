@@ -1,14 +1,10 @@
 from datetime import datetime
 from typing import Generator
 
-from utils import backoff, coroutine
+from utils import coroutine
 from process.entities.models import FilmWork
 
-import psycopg
 from psycopg import ServerCursor
-
-from dsl import dsl
-from psycopg.rows import class_row
 
 
 @coroutine

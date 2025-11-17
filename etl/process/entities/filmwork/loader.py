@@ -1,3 +1,4 @@
+from logging import info
 from datetime import datetime
 from typing import Generator
 
@@ -36,5 +37,7 @@ def load_movies(
                 for f in filworks
             ]
         )
-        print(last_modified, flush=True)
+
+        info(f"{state_key} актуализированы до {str(last_modified)}")
+
         state.set_state(state_key=state_key, value=last_modified)

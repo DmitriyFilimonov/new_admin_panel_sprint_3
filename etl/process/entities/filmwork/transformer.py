@@ -18,8 +18,6 @@ def transform_movies(
 
     while filworks := (yield):
         for filwork in filworks:
-            print(f"persons: {filwork.persons}", flush=True)
-
             transformed_persons = [
                 FilworkPerson(
                     person_id=p["person_id"],
