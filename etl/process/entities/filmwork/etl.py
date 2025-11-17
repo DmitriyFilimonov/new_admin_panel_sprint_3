@@ -1,6 +1,4 @@
-
 from time import sleep
-from datetime import datetime
 from psycopg import ServerCursor
 
 from process.entities.filmwork.constants import STATE_KEY
@@ -20,4 +18,4 @@ def movies_etl(state: State, cursor: ServerCursor):
 
         extractor.send(last_update)
 
-        sleep(10)
+        sleep(15)

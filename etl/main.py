@@ -7,11 +7,13 @@ import psycopg
 from psycopg import ServerCursor, connection as _connection
 from psycopg.rows import class_row
 
+from utils import backoff
 from process.entities.filmwork.etl import movies_etl
 from state.state import JsonFileStorage, State
 from process.entities.dataclasses import FilmWork
 
 
+@backoff(border_sleep_time=40)
 def start_etl():
     with (
         psycopg.connect(**dsl, row_factory=class_row(FilmWork)) as connection,
