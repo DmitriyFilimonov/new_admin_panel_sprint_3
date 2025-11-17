@@ -1,3 +1,4 @@
+from dataclasses import asdict
 from time import sleep
 import requests
 import json
@@ -99,14 +100,13 @@ def create_scheme():
 
 
 @backoff(border_sleep_time=60, factor=1.5, start_sleep_time=10)
-def send_bulk(bulk: list[FilmWorkESDocRaw]):
-    json.dumps(bulk)
+def send_bulk(bulk: list[FilmWorkESDoc]):
 
     bulk_req_body = ""
     for fw in bulk:
         action = {"index": {"_index": "movies", "_id": fw.id}}
         bulk_req_body += json.dumps(action) + "\n"
-        bulk_req_body += json.dumps(fw) + "\n"
+        bulk_req_body += json.dumps(asdict(fw)) + "\n"
 
     headers = {"Content-Type": "application/json"}
 
