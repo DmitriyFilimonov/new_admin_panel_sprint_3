@@ -1,0 +1,25 @@
+version: '3'
+services:
+  etl-state:
+    image: redis:7.2
+    restart: always
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+
+  etl-process:
+    build: .
+    env_file:
+      - ./.env
+  db:
+    image: postgres:16
+    env_file:
+      - ./.env
+    volumes:
+      - ./database_dump.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  static_volume:
+  redis-data:
