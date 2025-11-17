@@ -6,6 +6,7 @@ services:
       - ./.env
     depends_on:
       - db
+      - es
     volumes:
       - etl_storage:/opt/app/storage
 
@@ -15,6 +16,17 @@ services:
       - ./.env
     volumes:
       - ./database_dump.sql:/docker-entrypoint-initdb.d/init.sql
+  es:
+    image: elasticsearch:8.6.2
+    container_name: es
+    expose:
+      - 9200
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
 
 volumes:
   etl_storage:
+  esdata:

@@ -1,6 +1,7 @@
 from functools import wraps
 from time import sleep
 from typing import Generator
+import requests
 
 import psycopg
 
@@ -18,6 +19,7 @@ def coroutine(func):
 RETRYABLE_ERRORS = (
     psycopg.OperationalError,
     ConnectionError,
+    requests.exceptions.ConnectionError
 )
 
 
