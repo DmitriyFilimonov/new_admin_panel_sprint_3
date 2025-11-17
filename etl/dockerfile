@@ -9,4 +9,4 @@ RUN  pip install --upgrade pip \
 
 COPY . .
 
-CMD ["python","-m","etl_main"]
+CMD ["python","-m","main"]
