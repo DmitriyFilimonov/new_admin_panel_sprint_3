@@ -1,13 +1,20 @@
 from datetime import datetime
+from typing import Generator
 from psycopg import ServerCursor
 
+from utils import coroutine
 from process.entities.models import FilmWork
 
 
-def extract_movies_by_person_modified(pg_cursor: ServerCursor) -> list[FilmWork]:
-    pg_cursor.execute(
-        """
-        SELECT
+@coroutine
+def extract_movies_by_person_modified(
+    cursor: ServerCursor[FilmWork],
+    next: Generator[None, list[FilmWork], None],
+) -> Generator[None, datetime, None]:
+    while last_updated := (yield):
+        cursor.execute(
+            """
+            SELECT
             fw.id,
             fw.title,
             fw.description,
@@ -26,25 +33,23 @@ def extract_movies_by_person_modified(pg_cursor: ServerCursor) -> list[FilmWork]
                 '[]'
             ) as persons,
             array_agg(DISTINCT g.name) as genres
-        FROM content.person p_filter
-        JOIN content.person_film_work pfw_filter ON pfw_filter.person_id = p_filter.id
-        JOIN content.film_work fw ON fw.id = pfw_filter.film_work_id
-        
-        LEFT JOIN content.person_film_work pfw_selection ON pfw_selection.film_work_id = fw.id
-        LEFT JOIN content.person p_selection ON p_selection.id = pfw_selection.person_id
-        
-        LEFT JOIN content.genre_film_work gfw ON gfw.film_work_id = fw.id
-        LEFT JOIN content.genre g ON g.id = gfw.genre_id
+            FROM content.person p_filter
+            JOIN content.person_film_work pfw_filter ON pfw_filter.person_id = p_filter.id
+            JOIN content.film_work fw ON fw.id = pfw_filter.film_work_id
+            
+            LEFT JOIN content.person_film_work pfw_selection ON pfw_selection.film_work_id = fw.id
+            LEFT JOIN content.person p_selection ON p_selection.id = pfw_selection.person_id
+            
+            LEFT JOIN content.genre_film_work gfw ON gfw.film_work_id = fw.id
+            LEFT JOIN content.genre g ON g.id = gfw.genre_id
 
 
-        WHERE p_filter.modified > %s
-        GROUP BY fw.id
-        ORDER BY MAX(p_filter.modified)
-        LIMIT 100;
-        """,
-        (datetime.min,),
-    )
-
-    filmworks_extended = pg_cursor.fetchall()
-
-    return [FilmWork(**dict(filmwork)) for filmwork in filmworks_extended]
+            WHERE p_filter.modified > %s
+            GROUP BY fw.id
+            ORDER BY MAX(p_filter.modified)
+            LIMIT 100;
+            """,
+            (last_updated,),
+        )
+    while results := cursor.fetchmany(size=100):
+        next.send(results)

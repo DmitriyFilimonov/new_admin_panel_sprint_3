@@ -11,7 +11,7 @@ from utils import coroutine
 
 
 @coroutine
-def transform_movies_by_modified(
+def transform_movies(
     next: Generator[None, list[FilmWorkESDocRaw], None],
 ) -> Generator[None, list[FilmWork], None]:
     transformed_filworks: list[FilmWorkESDocRaw] = []
@@ -23,8 +23,8 @@ def transform_movies_by_modified(
             transformed_persons = [
                 FilworkPerson(
                     person_id=p["person_id"],
-                    person_name=p["person_name"].lower(),
-                    person_role=p["person_role"].lower(),
+                    person_name=p["person_name"],
+                    person_role=p["person_role"],
                 )
                 for p in filwork.persons
             ]
@@ -36,7 +36,7 @@ def transform_movies_by_modified(
             transformed = FilmWorkESDocRaw(
                 id=str(filwork.id),
                 imdb_rating=filwork.rating,
-                genres=[g.lower() for g in filwork.genres],
+                genres=[g for g in filwork.genres],
                 title=filwork.title,
                 description=filwork.description,
                 directors_names=[d.person_name for d in directors],
