@@ -34,7 +34,7 @@ class State:
 
     def set_state(self, state_key: str, value: datetime) -> None:
         state_dict = self.storage.retrieve_state()
-        state_dict[state_key] = str(value)
+        state_dict[state_key] = value.isoformat(timespec="microseconds")
         self.storage.save_state(state_dict)
 
     def get_state(self, state_key: str) -> datetime:
